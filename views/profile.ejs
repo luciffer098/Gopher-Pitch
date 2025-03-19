@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Settings - Gopher Pitch</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #fff8e1;
+            color: #7a0019;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #7a0019;
+            color: white;
+            padding: 10px 20px;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+
+        main {
+            padding: 20px;
+            max-width: 800px;
+            margin: auto;
+        }
+
+        .account-settings {
+            background-color: #fff;
+            border: 2px solid #7a0019;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .account-settings img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin-bottom: 20px;
+            cursor: pointer;
+        }
+
+        .account-settings input[type="text"],
+        .account-settings input[type="file"] {
+            padding: 10px;
+            margin-bottom: 10px;
+            width: 80%;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        .preferences {
+            margin-bottom: 20px;
+        }
+
+        .delete-account {
+            padding: 10px 20px;
+            background-color: #ff4747;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .preferences input[type="checkbox"] {
+            margin-right: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="logo">Gopher Pitch</div>
+        <button onclick="window.location.href='index.html'">Back to Home</button>
+    </header>
+
+    <main>
+        <div class="account-settings">
+            <h2>Your Profile</h2>
+            <img src="profile-placeholder.jpg" alt="Profile Photo" id="profileImage">
+            <input type="file" id="uploadPhoto" accept="image/*">
+            <input type="text" id="profileName" placeholder="Enter your name">
+
+            <div class="preferences">
+                <h3>Set Preferences</h3>
+                <label><input type="checkbox" id="preference1"> Preference 1</label><br>
+                <label><input type="checkbox" id="preference2"> Preference 2</label><br>
+                <label><input type="checkbox" id="preference3"> Preference 3</label><br>
+            </div>
+
+            <div>
+                <h3>Your Groups</h3>
+                <p>Saved Groups: <span id="savedGroupsCount">5</span></p>
+                <p>Created Groups: <span id="createdGroupsCount">2</span></p>
+            </div>
+
+            <button class="delete-account" onclick="deleteAccount()">Delete Account</button>
+        </div>
+    </main>
+
+    <script>
+        document.getElementById('profileImage').addEventListener('click', function () {
+            document.getElementById('uploadPhoto').click();
+        });
+
+        document.getElementById('uploadPhoto').addEventListener('change', function (event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    document.getElementById('profileImage').src = e.target.result;
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        function deleteAccount() {
+            const confirmDelete = confirm('Are you sure you want to delete your account? This action cannot be undone.');
+            if (confirmDelete) {
+                alert('Account deleted!');
+                window.location.href = 'index.html';
+            }
+        }
+    </script>
+</body>
+
+</html>

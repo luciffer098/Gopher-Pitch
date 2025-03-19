@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gopher Pitch Directory</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #fff8e1;
+            color: #7a0019;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #7a0019;
+            color: white;
+            padding: 10px 20px;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+
+        .search-section {
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+
+        .search-section input {
+            padding: 10px;
+            border-radius: 5px;
+            border: none;
+            width: 300px;
+        }
+
+        .search-section button {
+            margin-left: 10px;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            background-color: #ffcc33;
+            color: #7a0019;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            top: 40px;
+            background-color: white;
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .user-options button {
+            margin-left: 10px;
+            padding: 10px 15px;
+            background-color: #ffcc33;
+            color: #7a0019;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        main {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #addGroupButton {
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background-color: #7a0019;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .group {
+            display: flex;
+            background-color: #fff;
+            border: 2px solid #7a0019;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            width: 80%;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .group img {
+            width: 100px;
+            height: 100px;
+            border-radius: 10px;
+            margin-right: 20px;
+        }
+
+        .group-info h3 {
+            margin: 0 0 10px 0;
+            cursor: pointer;
+            color: #7a0019;
+        }
+
+        .group-info .description {
+            margin: 5px 0;
+            color: #555;
+        }
+
+        .interest-button {
+            margin-top: 10px;
+            padding: 5px 10px;
+            background-color: #ffcc33;
+            color: #7a0019;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="logo">Gopher Pitch</div>
+        <div class="search-section">
+            <input type="text" id="searchInput" placeholder="Search">
+            <!-- <button id="filterButton">Filters</button>
+            <div id="filterDropdown" class="dropdown-content">
+                <label><input type="checkbox"> xxx</label><br>
+                <label><input type="checkbox"> xxxx</label><br>
+                <label><input type="checkbox"> ccc</label><br>
+                <label><input type="checkbox"> cvcv</label><br>
+            </div> -->
+            <!-- <button id="sortButton">Sort By</button> -->
+        </div>
+        <div class="user-options">
+            <button>Inbox</button>
+            <button>Account</button>
+            <button>Settings</button>
+        </div>
+    </header>
+
+    <main>
+        <button id="addGroupButton" onclick="location.href='/addevent'">+ Group</button>
+        <div id="groupContainer">
+            <% if (events.length===0) { %>
+                <p>No events available.</p>
+                <% } else { %>
+                    <% events.forEach(event=> { %>
+                        <div class="group" data-name="<%= event.name %>" data-organizer="<%= event.organizer %>"
+                            data-description="<%= event.description %>" data-tags="<%= event.tags.join(', ') %>">
+                            <div class="group-info">
+                                <h3 onclick="location.href='/group/<%= event._id %>'">
+                                    <%= event.name %>
+                                </h3>
+                                <p class="description">
+                                    <%= event.description %>
+                                </p>
+                                <p>Organizer: <strong>
+                                        <%= event.organizer %>
+                                    </strong></p>
+                                <p>Tags: <%= event.tags.join(", ") %></p>
+        <button class=" interest-button">Interested (<span class="interest-count">0</span>)</button>
+                            </div>
+                        </div>
+                        <% }); %>
+                            <% } %>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/fuse.js/dist/fuse.min.js"></script>
+    <script>
+        document.getElementById('filterButton').addEventListener('click', function () {
+            const dropdown = document.getElementById('filterDropdown');
+            dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+        });
+
+        // Extract group information from the DOM
+        const groups = [...document.querySelectorAll('.group')].map(group => ({
+            element: group,
+            name: group.getAttribute('data-name'),
+            organizer: group.getAttribute('data-organizer'),
+            description: group.getAttribute('data-description'),
+            tags: group.getAttribute('data-tags')
+        }));
+
+        // Configure Fuse.js for fuzzy search across multiple fields
+        const fuse = new Fuse(groups, {
+            keys: ['name', 'organizer', 'description', 'tags'],  // ✅ Search across all these fields
+            threshold: 0.3
+        });
+
+        // Handle search input
+        document.getElementById('searchInput').addEventListener('input', function () {
+            const query = this.value;
+            const results = fuse.search(query);
+
+            // Hide all groups initially
+            groups.forEach(group => group.element.style.display = 'none');
+
+            if (query) {
+                // Show only matching results
+                results.forEach(result => result.item.element.style.display = 'flex');
+            } else {
+                // Show all if no search query
+                groups.forEach(group => group.element.style.display = 'flex');
+            }
+        });
+
+        // Interest button functionality
+        document.querySelectorAll('.interest-button').forEach(button => {
+            button.addEventListener('click', function () {
+                const countSpan = this.querySelector('.interest-count');
+                if (this.classList.contains('clicked')) {
+                    countSpan.textContent = parseInt(countSpan.textContent) - 1;
+                    this.classList.remove('clicked');
+                    this.style.backgroundColor = '#ffcc33';
+                    this.style.cursor = 'pointer';
+                } else {
+                    countSpan.textContent = parseInt(countSpan.textContent) + 1;
+                    this.classList.add('clicked');
+                    this.style.backgroundColor = '#ccc';
+                    this.style.cursor = 'not-allowed';
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Add an event</title>
+    <link rel="stylesheet" href="homestyles.css" />
+</head>
+
+<body id="home">
+    <h1 class="title">Create your own idea!</h1>
+
+    <form id="eventForm" action="/addevent" method="POST">
+        <label for="name">Event Name:</label>
+        <input type="text" id="name" name="name" required>
+
+        <label for="organizer">Organizer:</label>
+        <input type="text" id="organizer" name="organizer" required>
+
+        <label for="tags">Tags (comma-separated):</label>
+        <input type="text" id="tags" name="tags" required>
+
+        <label for="description">Description:</label>
+        <textarea id="description" name="description" rows="4" required></textarea>
+
+        <button type="submit">Add Event</button>
+    </form>
+
+    <script>
+        document.getElementById("eventForm").addEventListener("submit", async function (event) {
+            event.preventDefault(); // Prevent traditional form submission
+
+            const formData = {
+                name: document.getElementById("name").value,
+                organizer: document.getElementById("organizer").value,
+                tags: document.getElementById("tags").value.split(",").map(tag => tag.trim()), // Ensure array format
+                description: document.getElementById("description").value
+            };
+
+            console.log("Sending Data:", formData); // Debugging log
+
+            try {
+                const response = await fetch("/addevent", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+                console.log("Server Response:", result);
+
+                if (response.ok) {
+                    alert("Event added successfully!");
+                    document.getElementById("eventForm").reset();
+                    window.location.href = "/home";
+                } else {
+                    alert("Error adding event: " + result.error);
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                alert("Failed to connect to the server.");
+            }
+        });
+    </script>
+
+    <p id="currentTime"></p>
+    <script src="script.js"></script>
+</body>
+
+</html>

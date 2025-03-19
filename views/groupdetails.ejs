@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Group Details - Gopher Pitch</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #fff8e1;
+            color: #7a0019;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #7a0019;
+            color: white;
+            padding: 10px 20px;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        main {
+            padding: 20px;
+            max-width: 800px;
+            margin: auto;
+        }
+
+        .group-details {
+            background-color: #fff;
+            border: 2px solid #7a0019;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .group-details h2 {
+            margin-top: 0;
+        }
+
+        .info-section {
+            margin-bottom: 20px;
+        }
+
+        .comments-section {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+        }
+
+        .comment {
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: #fff;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+
+        .comment-form textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            resize: none;
+        }
+
+        .comment-form button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            background-color: #7a0019;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .back-button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #7a0019;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="logo" onclick="window.location.href='index.html'">Gopher Pitch</div>
+    </header>
+
+    <main>
+        <div class="group-details">
+            <h2>
+                <%= event.name %>
+            </h2>
+
+            <div class="info-section">
+                <strong>Description:</strong>
+                <p>
+                    <%= event.description %>
+                </p>
+            </div>
+
+            <div class="info-section">
+                <strong>Organizer:</strong>
+                <p>
+                    <%= event.organizer %>
+                </p>
+            </div>
+
+            <div class="info-section">
+                <strong>Tags:</strong>
+                <p>
+                    <%= event.tags.join(", ") %></p>
+            </div>
+
+            <div class=" info-section">
+                        <strong>Stage of Idea:</strong>
+                        <p>In Development</p>
+            </div>
+
+            <div class="comments-section">
+                <h3>Comments</h3>
+                <div id="comments-container"></div>
+                <div class="comment-form">
+                    <textarea id="comment-input" rows="3" placeholder="Write a comment..."></textarea>
+                    <button onclick="addComment()">Post Comment</button>
+                </div>
+            </div>
+
+            <button class="back-button" onclick="window.history.back()">Back to Directory</button>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', loadComments);
+
+        function loadComments() {
+            const commentsContainer = document.getElementById('comments-container');
+            const comments = JSON.parse(localStorage.getItem('comments') || '[]');
+
+            if (comments.length === 0) {
+                commentsContainer.innerHTML = '<p id="no-comments">No comments yet. Be the first to comment!</p>';
+            } else {
+                commentsContainer.innerHTML = '';
+                comments.forEach(commentText => {
+                    const newComment = document.createElement('div');
+                    newComment.className = 'comment';
+                    newComment.textContent = commentText;
+                    commentsContainer.appendChild(newComment);
+                });
+            }
+        }
+
+        function addComment() {
+            const commentInput = document.getElementById('comment-input');
+            const commentText = commentInput.value.trim();
+            if (commentText) {
+                const commentsContainer = document.getElementById('comments-container');
+                const comments = JSON.parse(localStorage.getItem('comments') || '[]');
+                comments.push(commentText);
+                localStorage.setItem('comments', JSON.stringify(comments));
+
+                const newComment = document.createElement('div');
+                newComment.className = 'comment';
+                newComment.textContent = commentText;
+
+                if (document.getElementById('no-comments')) {
+                    document.getElementById('no-comments').remove();
+                }
+
+                commentsContainer.appendChild(newComment);
+                commentInput.value = '';
+            } else {
+                alert('Please write a comment before posting.');
+            }
+        }
+    </script>
+</body>
+
+</html>
