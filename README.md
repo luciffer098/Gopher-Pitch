@@ -1,0 +1,1 @@
+This is a web app with a purpose of helping students at the University of Minnesota find the clubs and communities that they desire to be a part of. It is a centralized platforms where club leaders and students could post about club opportunities and comment to ask questions. 
